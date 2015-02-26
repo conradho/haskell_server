@@ -7,5 +7,7 @@ Instructions
 
 Setup Notes
 ===========
-
-- optionally, use cabal sandbox to create a virtualenv
+- get updated cabal with `cabal update && cabal install cabal-install`
+	- note where new cabal is installed to (.cabal/bin or local/bin etc)- prob need to do a bash alias/symlink/chg path to use new cabal
+- optionally, use cabal sandbox (only for updated cabal) to create a virtualenv
+	- cabal sandbox init
