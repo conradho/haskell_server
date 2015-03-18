@@ -1,4 +1,4 @@
-Name:                snapproject
+Name:                haskellserver
 Version:             0.1
 Synopsis:            Project Synopsis Here
 Description:         Project Description Here
@@ -8,16 +8,23 @@ Maintainer:          maintainer@example.com
 Stability:           Experimental
 Category:            Web
 Build-type:          Simple
-Cabal-version:       >=1.2
+Cabal-version:       >=1.10
 
-Test-Suite test
+Library
+  hs-source-dirs: src-lib
+
+-- test-suite is new in cabal 1.10
+Test-Suite tests
   type: exitcode-stdio-1.0
-  hs-source-dirs: testsuite, src
+  hs-source-dirs: src-test, src-lib
   main-is: TestRunner.hs
+  Build-depends:
+    base,
+    QuickCheck == 2.8.*
 
 
-Executable snapproject
-  hs-source-dirs: src
+Executable snapserver
+  hs-source-dirs: src-server
   main-is: Main.hs
 
   Build-depends:
