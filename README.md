@@ -2,7 +2,11 @@ Instructions
 ============
 
 - to start local server, run `snapproject`
-    - this is an executable put in your .cabal/bin or your sandbox after `cabal install`
+    - this is an executable put in your .cabal/bin or your sandbox after you build successfully
+- the whole building process
+	- `cabal configure --enable-tests`
+	- `cabal install --only-dependencies --enable-tests --jobs=5`
+	- `cabal build` or just `cabal test` when developing
 - for tests, run `cabal test`
     - test only "fails" if there is a system exit failure. To see other stuff, run with option `cabal test --show-details=always` or `=failures` to print the results
 
