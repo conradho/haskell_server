@@ -2,9 +2,19 @@ Instructions
 ============
 
 - to start local server, run `snapproject`
-    - this is an executable put in your .cabal/bin or your sandbox after `cabal install`
-- for tests, run `cabal test`
-    - test only "fails" if there is a system exit failure. To see other stuff, run with option `cabal test --show-details=always` or `=failures` to print the results
+    - this is an executable put in your .cabal/bin or your sandbox after you build successfully
+- the whole building process
+    - `cabal configure --enable-tests`
+    - `cabal install --only-dependencies --enable-tests --jobs=5`
+    - `cabal build && cabal test --test-options="--color" --show-details=always"`
+- notes:
+    - if you don't run build, you are just testing old code...
+    - just using quickcheck with tests means that you need to manually trigger a system exit/failure
+        - otherwise the test counts as "passed" even tough quickcheck prints failures out
+        - To see passes, check log file or run with option `--show-details=always`
+    - alternatively, you can try to do `runhaskell Spec.hs`, but
+        - you need to run it from within src-test
+        - it won't be able to import src-lib stuff
 
 Setup Notes
 ===========
