@@ -23,6 +23,7 @@ Test-Suite tests
   Build-depends: base
                , QuickCheck == 2.8.*
                , hspec
+               , hspec-discover
 
 
 Executable snapserver

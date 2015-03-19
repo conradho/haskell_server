@@ -1,20 +1,23 @@
+module WarmupExercisesSpec where
+
+import Test.Hspec
 import Test.QuickCheck
-import Test.QuickCheck.Test (isSuccess)
-import Control.Monad (unless)
-import System.Exit (exitFailure)
 
 -- import WarmupExercises (wordStartsWithA, selectElementsOfListStartingWithA)
-
-
-module WarmupExercisesSpec where
 
 checkAllStartWithA :: [String] -> Bool
 checkAllStartWithA x = True
 
--- deepCheck p = quickCheckWith (stdArgs{ maxSuccess = 1000 }) p
-
--- main :: IO ()
--- main = do
-    -- can also call "deepCheck" or "verboseCheck"
-    -- result <- quickCheckResult (checkAllStartWithA . selectElementsOfListStartingWithA)
-    -- unless (isSuccess result) exitFailure
+spec :: Spec
+spec = do
+    describe "selectElementsOfListSTartingWithA" $ do
+        it "should be blah" $
+            1 `shouldBe` 1
+        it "should only have 'a's in the list" $
+            1 `shouldBe` 2
+    describe "second function" $ do
+        it "should only have 'a's in the list" $
+            1 `shouldBe` 2
+    describe "third function" $ do
+        it "yay beans" $
+            1 `shouldBe` 1
