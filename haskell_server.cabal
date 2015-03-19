@@ -16,6 +16,7 @@ Library
 -- test-suite is new in cabal 1.10
 Test-Suite tests
   type: exitcode-stdio-1.0
+  Default-Language:     Haskell2010
   hs-source-dirs: src-test, src-lib
   main-is: TestRunner.hs
   Build-depends:
@@ -24,6 +25,7 @@ Test-Suite tests
 
 
 Executable snapserver
+  Default-Language:     Haskell2010
   hs-source-dirs: src-server
   main-is: Main.hs
 
