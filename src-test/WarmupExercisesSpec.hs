@@ -3,16 +3,19 @@ module WarmupExercisesSpec where
 import Test.Hspec
 import Test.QuickCheck (property)
 
-import WarmupExercises (wordStartsWithA, selectElementsOfListStartingWithA, everyPossiblePairSorted, getFirstHalf)
+import WarmupExercises (wordStartsWithA, selectElementsOfListStartingWithA, everyPossiblePairSorted, getFirstHalf, isPalindrome)
 
 checkAllStartWithA :: [String] -> Bool
 checkAllStartWithA x = and $ map wordStartsWithA x
 
 spec :: Spec
 spec = do
+
     describe "selectElementsOfListSTartingWithA" $ do
         it "should only have 'a's in the list" $ property $ do
+            -- QuickCheck properties give counter examples if it fails
             checkAllStartWithA . selectElementsOfListStartingWithA
+
     describe "everyPossiblePairSorted" $ do
         let alphabetStrings = map (:[]) ['a' .. 'd']  -- ["a", "b", "c", "d"]
         let expectedResult = ["ab", "ac", "ad", "bc", "bd", "cd"]
@@ -25,8 +28,10 @@ spec = do
                 (everyPossiblePairSorted reversedStrings) `shouldBe` expectedResult
             it "should not sort within each element" $ do
                 everyPossiblePairSorted ["abc", "fed", "hgi"] `shouldBe` ["abcfed", "abchgi", "fedhgi"]
+
     describe "getFirstHalf" $ do
-        -- below that we group all the lets into one, vs two separate let statements as above
+
+        -- below we group all the lets into one, vs two separate let statements as above
         -- also note the where indentation (which is based off the matchHead insead of the let)
         let matchHeadOfOriginalProperty xs = all (==True) (doesEachPositionMatch)
                 where doesEachPositionMatch = zipWith (==) (getFirstHalf xs) xs
@@ -47,9 +52,15 @@ spec = do
                 halfLengthProperty :: [Bool] -> Bool
             it "contains all characters from first half" $ property $ do
                 matchHeadOfOriginalProperty :: [Bool] -> Bool
-    describe "counts elements that are palindromes" $ do
-        it "sub-function correctly identifies palindromes" $
-            pendingWith "only fools leave random tests lying around"
+
+    describe "isPalindrome" $ do
+        let palindromes = ["abcba", "weffew"]
+            nonPalindromes = ["aldskj", "qwe", "qe"]
+        it "correctly identifies palindromes" $ do
+            palindromes `shouldSatisfy` (all isPalindrome)
+        it "correctly identifies non-palindromes" $ do
+            nonPalindromes `shouldSatisfy` (not . any isPalindrome)
+
     describe "format a date nicely" $ do
         it "matches a regex" $
             pendingWith "write a regex to match the date"
