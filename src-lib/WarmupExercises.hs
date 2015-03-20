@@ -1,6 +1,6 @@
 module WarmupExercises where
 
--- help functions
+-- helper functions
 wordStartsWithA :: String -> Bool
 wordStartsWithA (x:xs) = x == 'a'
 wordStartsWithA [] = False
@@ -12,10 +12,6 @@ quicksort (pivot:rest) =
         biggerSorted = quicksort [e | e <- rest, e > pivot]
     in smallerSorted ++ [pivot] ++ biggerSorted
 
-sortComponentsAndList :: Ord a => [[a]] -> [[a]]
--- if there was a [] pattern, it needs to be first here, because otherwise the strings pattern matches everything
-sortComponentsAndList strings = quicksort $ map quicksort strings
-
 -- first question
 selectElementsOfListStartingWithA :: [String] -> [String]
 selectElementsOfListStartingWithA words = filter wordStartsWithA words
@@ -23,4 +19,9 @@ selectElementsOfListStartingWithA words = filter wordStartsWithA words
 -- concatenate pairs of strings
 everyPossiblePair :: [String] -> [String]
 everyPossiblePair [] = []
-everyPossiblePair (x:xs) = sortComponentsAndList $ [x ++ other | other <- xs] ++ everyPossiblePair xs
+everyPossiblePair (x:xs) = [x ++ other | other <- xs] ++ everyPossiblePair xs
+
+-- note if say there was a function declaration for [], it needs to go right after the type declaration
+-- because otherwise "x" matches everything
+everyPossiblePairSorted :: [String] -> [String]
+everyPossiblePairSorted x = everyPossiblePair $ quicksort x
