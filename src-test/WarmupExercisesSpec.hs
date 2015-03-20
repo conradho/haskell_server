@@ -3,7 +3,7 @@ module WarmupExercisesSpec where
 import Test.Hspec
 import Test.QuickCheck (property)
 
-import WarmupExercises (wordStartsWithA, selectElementsOfListStartingWithA, everyPossiblePairSorted)
+import WarmupExercises (wordStartsWithA, selectElementsOfListStartingWithA, everyPossiblePairSorted, getFirstHalf)
 
 checkAllStartWithA :: [String] -> Bool
 checkAllStartWithA x = and $ map wordStartsWithA x
@@ -25,11 +25,28 @@ spec = do
                 (everyPossiblePairSorted reversedStrings) `shouldBe` expectedResult
             it "should not sort within each element" $ do
                 everyPossiblePairSorted ["abc", "fed", "hgi"] `shouldBe` ["abcfed", "abchgi", "fedhgi"]
-    describe "get the first half of a string" $ do
-        it "has half the length" $ property $ do
-            pendingWith "have a quickcheck property checking length is half of input String"
-        it "contains all characters from first half" $ property $ do
-            pending
+    describe "getFirstHalf" $ do
+        -- below that we group all the lets into one, vs two separate let statements as above
+        -- also note the where indentation (which is based off the matchHead insead of the let)
+        let matchHeadOfOriginalProperty xs = all (==True) (doesEachPositionMatch)
+                where doesEachPositionMatch = zipWith (==) (getFirstHalf xs) xs
+            halfLengthProperty xs = length(getFirstHalf xs) == length xs `div` 2
+
+        context "when applied to strings" $ do
+            it "returns something with half the length" $ property $ do
+                halfLengthProperty :: String -> Bool
+            it "contains all characters from first half" $ property $ do
+                matchHeadOfOriginalProperty :: String -> Bool
+        context "when applied to a list of Integers" $ do
+            it "returns something with half the length" $ property $ do
+                halfLengthProperty :: [Integer] -> Bool
+            it "contains all characters from first half" $ property $ do
+                matchHeadOfOriginalProperty :: [Integer] -> Bool
+        context "when applied to a list of Bools" $ do
+            it "returns something with half the length" $ property $ do
+                halfLengthProperty :: [Bool] -> Bool
+            it "contains all characters from first half" $ property $ do
+                matchHeadOfOriginalProperty :: [Bool] -> Bool
     describe "counts elements that are palindromes" $ do
         it "sub-function correctly identifies palindromes" $
             pendingWith "only fools leave random tests lying around"

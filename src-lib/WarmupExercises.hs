@@ -25,3 +25,9 @@ selectElementsOfListStartingWithA words = filter wordStartsWithA words
 -- because otherwise "x" matches everything
 everyPossiblePairSorted :: [String] -> [String]
 everyPossiblePairSorted x = everyPossiblePair $ quicksort x
+
+
+getFirstHalf :: [a] -> [a]
+getFirstHalf [] = []
+getFirstHalf xs = take (n `div` 2) xs
+     where n = length xs
