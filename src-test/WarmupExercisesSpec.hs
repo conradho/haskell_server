@@ -11,17 +11,15 @@ checkAllStartWithA x = and $ map wordStartsWithA x
 spec :: Spec
 spec = do
     describe "selectElementsOfListSTartingWithA" $ do
-        it "should only have 'a's in the list" $ property $
+        it "should only have 'a's in the list" $ property $ do
             checkAllStartWithA . selectElementsOfListStartingWithA
     describe "everyPossiblePair" $ do
         -- alphabetStrings is ["a", "b", "c", "d"]
         let alphabetStrings = map (:[]) ['a' .. 'd']
         let expectedResult = ["ab", "ac", "ad", "bc", "bd", "cd"]
-        it "should make every possible pairing of students" $
+        it "should make every possible pairing of students" $ do
             (everyPossiblePair alphabetStrings) `shouldBe` expectedResult
         it "should make alphabetical no matter what" $ do
-            -- the let statement below requires the `do` above
-            -- compare it to the property statement above (without the `do` after `$`
             let reversedStrings = reverse alphabetStrings
             (everyPossiblePair reversedStrings) `shouldBe` expectedResult
     describe "third function" $ do
