@@ -25,6 +25,20 @@ spec = do
                 (everyPossiblePairSorted reversedStrings) `shouldBe` expectedResult
             it "should not sort within each element" $ do
                 everyPossiblePairSorted ["abc", "fed", "hgi"] `shouldBe` ["abcfed", "abchgi", "fedhgi"]
-    describe "third function" $ do
+    describe "get the first half of a string" $ do
+        it "has half the length" $ property $ do
+            pendingWith "have a quickcheck property checking length is half of input String"
+        it "contains all characters from first half" $ property $ do
+            pending
+    describe "counts elements that are palindromes" $ do
+        it "sub-function correctly identifies palindromes" $
+            pendingWith "only fools leave random tests lying around"
+    describe "format a date nicely" $ do
+        it "matches a regex" $
+            pendingWith "write a regex to match the date"
+    describe "anagrams of words that are real words?" $ do
+        it "any anagram can be made from the original chars" $
+            pending
+    describe "flip the key/value of a dict" $ do
         it "yay beans" $
             pendingWith "only fools leave random tests lying around"
