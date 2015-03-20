@@ -14,13 +14,13 @@ spec = do
         it "should only have 'a's in the list" $ property $ do
             checkAllStartWithA . selectElementsOfListStartingWithA
     describe "everyPossiblePairSorted" $ do
-        -- alphabetStrings is ["a", "b", "c", "d"]
-        let alphabetStrings = map (:[]) ['a' .. 'd']
+        let alphabetStrings = map (:[]) ['a' .. 'd']  -- ["a", "b", "c", "d"]
         let expectedResult = ["ab", "ac", "ad", "bc", "bd", "cd"]
         it "should make every possible pairing of students" $ do
             (everyPossiblePairSorted alphabetStrings) `shouldBe` expectedResult
         context "when provided with non-sorted input" $ do
             it "should still return alphabetically sorted" $ do
+                -- the do above is needed (vs good style previously) because we have two statements
                 let reversedStrings = reverse alphabetStrings
                 (everyPossiblePairSorted reversedStrings) `shouldBe` expectedResult
             it "should not sort within each element" $ do

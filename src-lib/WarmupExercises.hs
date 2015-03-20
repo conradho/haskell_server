@@ -12,14 +12,14 @@ quicksort (pivot:rest) =
         biggerSorted = quicksort [e | e <- rest, e > pivot]
     in smallerSorted ++ [pivot] ++ biggerSorted
 
--- first question
-selectElementsOfListStartingWithA :: [String] -> [String]
-selectElementsOfListStartingWithA words = filter wordStartsWithA words
-
--- concatenate pairs of strings
 everyPossiblePair :: [String] -> [String]
 everyPossiblePair [] = []
 everyPossiblePair (x:xs) = [x ++ other | other <- xs] ++ everyPossiblePair xs
+
+
+-- first question
+selectElementsOfListStartingWithA :: [String] -> [String]
+selectElementsOfListStartingWithA words = filter wordStartsWithA words
 
 -- note if say there was a function declaration for [], it needs to go right after the type declaration
 -- because otherwise "x" matches everything
