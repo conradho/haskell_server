@@ -1,6 +1,8 @@
 module WarmupExercises where
 
 import Data.Time.Clock (UTCTime)
+import qualified Data.Map as Map
+import qualified Data.Tuple (swap)
 
 -- helper functions
 wordStartsWithA :: String -> Bool
@@ -50,3 +52,7 @@ isPalindrome (xStart:xs)
 
 formatDate :: UTCTime -> String
 formatDate a = "2015-01-01"
+
+flipKeyVal :: (Ord k, Ord v) => Map.Map k v -> Map.Map v k
+flipKeyVal dictionary = Map.fromList $ map Data.Tuple.swap (Map.toList dictionary)
+
