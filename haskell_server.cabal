@@ -22,6 +22,8 @@ Test-Suite tests
   main-is: Spec.hs
   Build-depends: base
                , QuickCheck == 2.8.*
+               , regex-posix == 0.95.2
+               , time == 1.4.2
                , hspec
                , hspec-discover
 

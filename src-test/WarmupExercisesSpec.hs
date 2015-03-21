@@ -2,6 +2,8 @@ module WarmupExercisesSpec where
 
 import Test.Hspec
 import Test.QuickCheck (property)
+import Text.Regex.Posix
+import Data.Time
 
 import WarmupExercises
     ( wordStartsWithA
@@ -68,8 +70,10 @@ spec = do
             nonPalindromes `shouldSatisfy` (not . any isPalindrome)
 
     describe "format a date nicely" $ do
-        it "matches a regex" $
-            pendingWith "write a regex to match the date"
+        it "matches a date regex" $ do
+            let regexPattern = "(abc|def)"
+            c <- getCurrentTime
+            "abc" =~ regexPattern `shouldBe` True
     describe "anagrams of words that are real words?" $ do
         it "any anagram can be made from the original chars" $
             pending

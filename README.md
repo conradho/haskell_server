@@ -9,6 +9,8 @@ Instructions
     - `cabal build && cabal test --test-options="--color" --show-details=always"`
 - notes:
     - if you don't run build, you are just testing old code...
+    - whenever you need to do `:m +module` in ghci, you will need to add to the cabal build dependency
+        - if it still doesn't work, you may have to re-configure/install into your sandbox before building
     - just using quickcheck with tests means that you need to manually trigger a system exit/failure
         - otherwise the test counts as "passed" even tough quickcheck prints failures out
         - To see passes, check log file or run with option `--show-details=always`
