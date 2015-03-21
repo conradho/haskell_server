@@ -2,8 +2,8 @@ module WarmupExercisesSpec where
 
 import Test.Hspec
 import Test.QuickCheck (property)
-import Text.Regex.Posix
-import Data.Time
+import qualified Text.Regex.Posix
+import Data.Time (getCurrentTime)
 
 import WarmupExercises
     ( wordStartsWithA
@@ -11,6 +11,7 @@ import WarmupExercises
     , everyPossiblePairSorted
     , getFirstHalf
     , isPalindrome
+    , formatDate
     )
 
 checkAllStartWithA :: [String] -> Bool
@@ -69,14 +70,19 @@ spec = do
         it "correctly identifies non-palindromes" $ do
             nonPalindromes `shouldSatisfy` (not . any isPalindrome)
 
-    describe "format a date nicely" $ do
+    describe "formatDate" $ do
+        let regexPattern = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
         it "matches a date regex" $ do
-            let regexPattern = "(abc|def)"
+            -- why does this have to be here and can't be one level up?
             c <- getCurrentTime
-            "abc" =~ regexPattern `shouldBe` True
+            formatDate c Text.Regex.Posix.=~ regexPattern `shouldBe` True
+        it "has the correct dates" $ do
+            pendingWith "need to make regex return year, month, day"
+
     describe "anagrams of words that are real words?" $ do
         it "any anagram can be made from the original chars" $
             pending
+
     describe "flip the key/value of a dict" $ do
         it "yay beans" $
             pendingWith "only fools leave random tests lying around"

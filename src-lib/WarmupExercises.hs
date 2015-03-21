@@ -1,5 +1,7 @@
 module WarmupExercises where
 
+import Data.Time.Clock (UTCTime)
+
 -- helper functions
 wordStartsWithA :: String -> Bool
 wordStartsWithA (x:xs) = x == 'a'
@@ -44,3 +46,7 @@ isPalindrome (xStart:xs)
     | otherwise = False
     where xEnd = last xs
           (xMiddle, _) = splitAt (length xs - 1) xs
+
+
+formatDate :: UTCTime -> String
+formatDate a = "2015-01-01"
