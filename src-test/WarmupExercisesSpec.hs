@@ -3,7 +3,13 @@ module WarmupExercisesSpec where
 import Test.Hspec
 import Test.QuickCheck (property)
 
-import WarmupExercises (wordStartsWithA, selectElementsOfListStartingWithA, everyPossiblePairSorted, getFirstHalf, isPalindrome)
+import WarmupExercises
+    ( wordStartsWithA
+    , selectElementsOfListStartingWithA
+    , everyPossiblePairSorted
+    , getFirstHalf
+    , isPalindrome
+    )
 
 checkAllStartWithA :: [String] -> Bool
 checkAllStartWithA x = and $ map wordStartsWithA x
@@ -19,7 +25,7 @@ spec = do
     describe "everyPossiblePairSorted" $ do
         let alphabetStrings = map (:[]) ['a' .. 'd']  -- ["a", "b", "c", "d"]
         let expectedResult = ["ab", "ac", "ad", "bc", "bd", "cd"]
-        it "should make every possible pairing of students" $ do
+        it "should return every possible pairing of students" $ do
             (everyPossiblePairSorted alphabetStrings) `shouldBe` expectedResult
         context "when provided with non-sorted input" $ do
             it "should still return alphabetically sorted" $ do
