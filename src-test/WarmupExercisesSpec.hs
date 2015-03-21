@@ -2,7 +2,7 @@ module WarmupExercisesSpec where
 
 import Test.Hspec
 import Test.QuickCheck (property)
-import qualified Text.Regex.Posix
+import Text.Regex.Posix ((=~))
 import Data.Time (getCurrentTime)
 
 import WarmupExercises
@@ -75,8 +75,9 @@ spec = do
         it "matches a date regex" $ do
             -- why does this have to be here and can't be one level up?
             c <- getCurrentTime
-            formatDate c Text.Regex.Posix.=~ regexPattern `shouldBe` True
+            regexPattern `shouldSatisfy` (=~) (formatDate c)
         it "has the correct dates" $ do
+            c <- getCurrentTime
             pendingWith "need to make regex return year, month, day"
 
     describe "anagrams of words that are real words?" $ do
