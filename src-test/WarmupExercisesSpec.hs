@@ -1,7 +1,8 @@
 module WarmupExercisesSpec where
 
 import Test.Hspec
-import Test.QuickCheck (property)
+import Test.Hspec.QuickCheck (modifyMaxSuccess, prop)
+import Test.QuickCheck (property, listOf1, elements, forAll)
 import Text.Regex.Posix ((=~))
 import Data.Time (getCurrentTime)
 import qualified Data.Map as Map
@@ -22,7 +23,7 @@ checkAllStartWithA x = and $ map wordStartsWithA x
 spec :: Spec
 spec = do
 
-    describe "selectElementsOfListSTartingWithA" $ do
+    describe "selectElementsOfListStartingWithA" $ do
         it "should only have 'a's in the list" $ property $ do
             -- QuickCheck properties print counter examples if it fails vs hspec doesn't
             checkAllStartWithA . selectElementsOfListStartingWithA
@@ -64,25 +65,33 @@ spec = do
                 matchHeadOfOriginalProperty :: String -> Bool
 
         context "when applied to a list of Integers" $ do
-            it "returns something with half the length" $ property $ do
+            -- note: prop is just a shortcut for it + property.
+            -- here you always need to put `do` at the end
+            prop "returns something with half the length" $ do
                 halfLengthProperty :: [Integer] -> Bool
-            it "contains all characters from first half" $ property $ do
+            prop "contains all characters from first half" $ do
                 matchHeadOfOriginalProperty :: [Integer] -> Bool
 
         context "when applied to a list of Bools" $ do
-            it "returns something with half the length" $ property $ do
+            prop "returns something with half the length" $ do
                 halfLengthProperty :: [Bool] -> Bool
-            it "contains all characters from first half" $ property $ do
+            prop "contains all characters from first half" $ do
                 matchHeadOfOriginalProperty :: [Bool] -> Bool
 
 
     describe "isPalindrome" $ do
         let palindromes = ["abcba", "weffew"]
             nonPalindromes = ["aldskj", "qwe", "qe"]
+            randomWord = listOf1 $ elements ['a'..'z'] -- creates quickcheck testcase generator
         it "correctly identifies palindromes" $ do
             palindromes `shouldSatisfy` (all isPalindrome)
         it "correctly identifies non-palindromes" $ do
             nonPalindromes `shouldSatisfy` (not . any isPalindrome)
+        it "does blah" $
+            -- specify your own testcase generator (randomWord) for \word
+            -- note it does not actually exhaustively test all combinations (obviously)
+            -- forAll already wraps the `property` part (converts a function returning Bool into a quickcheck Property)
+            forAll randomWord $ \word -> not $ isPalindrome word
 
 
     describe "formatDate" $ do
@@ -99,20 +108,24 @@ spec = do
         it "any anagram can be made from the original chars" $
             pending
 
+        -- change to MOAR quickcheck iterations
+        modifyMaxSuccess (const 50) $ prop "hilo" $ do
+            ((\xs -> xs == xs) :: [Int] -> Bool)
+
 
     describe "flipKeyVal" $ do
-        it "check flipping twice gives original" $ property $ do
+        prop "check flipping twice gives original" $ do
             -- this fails because if there is duplicated value, the the keys they become are not unique
             let doubleFlipProperty :: [Int] -> [Int] -> Bool
                 doubleFlipProperty ks vs = flipKeyVal (flipKeyVal mapping) == mapping
                     where mapping = Map.fromList $ zip ks vs
             doubleFlipProperty
-        it "flipping a mapping with keys == vals does not change it" $ property $ do
+        prop "flipping a mapping with keys == vals does not change it" $ do
             let keyValueSame :: [Int] -> Bool
                 keyValueSame ks = (flipKeyVal mapping) == mapping
                     where mapping = Map.fromList $ zip ks ks
             keyValueSame
-        it "check flipped mapping == creating a new mapping using swapped key/value" $ property $ do
+        prop "check flipped mapping == creating a new mapping using swapped key/value" $ do
             -- this fails because if there is duplicated value, the the keys they become are not unique
             let swappedKeyValueProperty :: [Int] -> [Int] -> Bool
                 swappedKeyValueProperty ks vs = (flipKeyVal mapping) == reversedMapping
