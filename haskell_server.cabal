@@ -13,6 +13,8 @@ Cabal-version:       >=1.10
 Library
   hs-source-dirs: src-lib
   Default-Language:     Haskell2010
+  Build-depends: base
+               , time == 1.5.0.1
 
 -- test-suite is new in cabal 1.10
 Test-Suite tests
@@ -20,10 +22,12 @@ Test-Suite tests
   Default-Language:     Haskell2010
   hs-source-dirs: src-test, src-lib
   main-is: Spec.hs
+  -- because test suite imports library stuff, most dependencies in
+  -- library needs to be in test dependencies as well
   Build-depends: base
                , QuickCheck == 2.8.*
                , regex-posix == 0.95.2
-               , time == 1.4.2
+               , time == 1.5.0.1
                , containers == 0.5.5.1
                , hspec
                , hspec-discover

@@ -2,10 +2,25 @@ module WarmupExercisesSpec where
 
 import Test.Hspec
 import Test.Hspec.QuickCheck (modifyMaxSuccess, prop)
-import Test.QuickCheck (property, listOf1, elements, forAll)
+import Test.QuickCheck
+    ( Arbitrary
+    , arbitrary
+    , choose
+    , property
+    , listOf1
+    , elements
+    , forAll
+    )
 import Text.Regex.Posix ((=~))
-import Data.Time (getCurrentTime)
+
+import Data.Time -- (getCurrentTime, fromGregorian)
+-- somehow the UTCTime import exists in both Data.Time and Data.Time.Clock
+-- and trying to specify it fails
+-- import Data.Time.Clock as DTC (UTCTime)
+
+import Text.Printf (printf)
 import qualified Data.Map as Map
+import Control.Monad (liftM)
 
 import WarmupExercises
     ( wordStartsWithA
@@ -19,6 +34,23 @@ import WarmupExercises
 
 checkAllStartWithA :: [String] -> Bool
 checkAllStartWithA x = and $ map wordStartsWithA x
+
+-- TODO: rewrite this
+stringifyDate y m d = (printf "%04d" y) ++ "-" ++ (printf "%02d" m) ++ "-" ++ (printf "%02d" d)
+
+data RandomYear = RandomYear Integer deriving (Show)
+instance Arbitrary RandomYear where
+    arbitrary = RandomYear `liftM` choose (1000, 3000)
+
+data RandomMonth = RandomMonth Int deriving (Show)
+instance Arbitrary RandomMonth where
+    arbitrary = RandomMonth `liftM` choose (1, 12)
+
+data RandomDay = RandomDay Int deriving (Show)
+instance Arbitrary RandomDay where
+    -- otherwise Feb 31 etc would fails
+    -- should rewrite so that a single generator makes year month date
+    arbitrary = RandomDay `liftM` choose (1, 28)
 
 spec :: Spec
 spec = do
@@ -82,7 +114,9 @@ spec = do
     describe "isPalindrome" $ do
         let palindromes = ["abcba", "weffew"]
             nonPalindromes = ["aldskj", "qwe", "qe"]
-            randomWord = listOf1 $ elements ['a'..'z'] -- creates quickcheck testcase generator
+            -- create quickcheck testcase generator; excludes empty list
+            randomWord = listOf1 $ elements ['a'..'z']
+
         it "correctly identifies palindromes" $ do
             palindromes `shouldSatisfy` (all isPalindrome)
         it "correctly identifies non-palindromes" $ do
@@ -100,8 +134,13 @@ spec = do
             -- why does this have to be here and can't be one level up?
             rightNow <- getCurrentTime
             regexPattern `shouldSatisfy` (=~) (formatDate rightNow)
-        it "has the correct dates" $ do
-            pendingWith "need to make regex return year, month, day"
+        it "has the correct dates" $ property $ do
+                let propCorrectDate (RandomYear y) (RandomMonth m) (RandomDay d) =
+                        stringDate == formatDate randomUTC
+                            where stringDate = stringifyDate y m d
+                                  -- UTCTime takes Day type and also needs a seconds from 00:00
+                                  randomUTC = UTCTime (fromGregorian y m d) (fromIntegral 123)
+                propCorrectDate :: RandomYear -> RandomMonth -> RandomDay -> Bool
 
 
     describe "anagrams of words that are real words?" $ do

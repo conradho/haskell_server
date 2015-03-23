@@ -13,7 +13,8 @@ Instructions
         - unless that module is included in the base package
         - if it is in a different package, you may already have it, (thus can +m without errors from ghci) but still need to add to cabal package dependency list
         - if you completely don't have it in your sandbox, then need to add to dependency list and then cabal configure + install dependencies
-    - just using quickcheck with tests means that you need to manually trigger a system exit/failure
+    - `cabal repl tests` and then :m +your-modules to debug, and :r after changes
+    - just using quickcheck with tests (without hspec) means that you need to manually trigger a system exit/failure
         - otherwise the test counts as "passed" even tough quickcheck prints failures out
         - To see passes, check log file or run with option `--show-details=always`
     - alternatively, you can try to do `runhaskell Spec.hs`, but

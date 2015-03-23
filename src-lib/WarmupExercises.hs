@@ -1,6 +1,10 @@
 module WarmupExercises where
 
-import Data.Time.Clock (UTCTime)
+-- note: add time to cabal dependency
+-- don't use defaultTimeLocale from System.Locale (the old-locale package)
+import Data.Time (FormatTime)
+import Data.Time.Format (formatTime, defaultTimeLocale)
+
 import qualified Data.Map as Map
 import qualified Data.Tuple (swap)
 
@@ -50,8 +54,9 @@ isPalindrome (xStart:xs)
           (xMiddle, _) = splitAt (length xs - 1) xs
 
 
-formatDate :: UTCTime -> String
-formatDate a = "2015-01-01"
+formatDate :: FormatTime a => a -> String
+-- %0Y zeropads to 4 digits (vs _Y blank space pads to 4 digits)
+formatDate t = formatTime defaultTimeLocale "%0Y-%m-%d" t
 
 flipKeyVal :: (Ord k, Ord v) => Map.Map k v -> Map.Map v k
 flipKeyVal dictionary = Map.fromList $ map Data.Tuple.swap (Map.toList dictionary)
