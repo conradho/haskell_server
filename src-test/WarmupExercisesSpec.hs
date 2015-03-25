@@ -7,9 +7,11 @@ import Test.QuickCheck
     , arbitrary
     , choose
     , property
+    , listOf
     , listOf1
     , elements
     , forAll
+    , suchThat
     )
 import Text.Regex.Posix ((=~))
 
@@ -53,9 +55,16 @@ instance Arbitrary RandomDay where
     -- should rewrite so that a single generator makes year month date
     arbitrary = RandomDay `liftM` choose (1, 28)
 
-newtype RandomWord = RandomWord String deriving (Show)
-instance Arbitrary RandomWord where
-    arbitrary = RandomWord `liftM` (listOf1 $ elements ['a'..'z'])
+newtype RandomNonPalindromeWord = RandomNonPalindromeWord String deriving (Show)
+instance Arbitrary RandomNonPalindromeWord where
+    arbitrary = RandomNonPalindromeWord `liftM` (
+        (listOf1 $ elements ['a'..'z'])
+            -- need listOf1 above because otherwise cannot split into (x:xs) below
+            -- otherwise it will say `non-exhaustive pattern` and the code compiles
+            -- but the specific test will fail
+            `suchThat` \all@(x:xs) ->
+                (length all > 3) && (x /= last xs)
+        )  -- note the weird place of closing bracket
 
 
 spec :: Spec
@@ -117,22 +126,28 @@ spec = do
 
 
     describe "isPalindrome" $ do
-        let palindromes = ["abcba", "weffew"]
-            nonPalindromes = ["aldskj", "qwe", "qe"]
-            -- create quickcheck testcase generator; excludes empty list
-            randomWord = listOf1 $ elements ['a'..'z']
 
-        it "correctly identifies palindromes" $ do
+        it "correctly identifies palindromes for select test cases" $ do
+            let palindromes = ["abcba", "weffew"]
             palindromes `shouldSatisfy` (all isPalindrome)
-        it "correctly identifies non-palindromes" $ do
+
+        it "correctly identifies non-palindromes for select test cases" $ do
+            let nonPalindromes = ["aldskj", "qwe", "qe"]
             nonPalindromes `shouldSatisfy` (not . any isPalindrome)
-        it "does blah" $
+
+        it "does blah" $ do
+            -- create quickcheck testcase generator; excludes empty list
+            let randomWord = listOf $ elements ['a'..'z']
             -- specify your own testcase generator (randomWord) for \word
             -- note it does not actually exhaustively test all combinations (just tries maxSuccess times)
             -- forAll already wraps the `property` part (converts a function returning Bool into a quickcheck Property)
             forAll randomWord $ \word -> not $ isPalindrome word
-        it "does blah2" $ property $ do
-            \(RandomWord word) -> not $ isPalindrome word
+
+        modifyMaxSuccess (const 50000) $ prop "correctly identifies non-palindromes FOR ALLS" $ do
+            -- because we make RandomWord >3 letters long, we need to drastically
+            -- up the # of test cases before we see nontrivial palindromes
+            -- the trivial ones are "", "a", "aa" etc
+            \(RandomNonPalindromeWord word) -> not $ isPalindrome word
 
 
     describe "formatDate" $ do

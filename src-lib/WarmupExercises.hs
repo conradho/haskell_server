@@ -46,7 +46,7 @@ getFirstHalf xs = take (n `div` 2) xs
 
 isPalindrome :: Eq a => [a] -> Bool
 isPalindrome [] = True
-isPalindrome (x:[]) = True
+isPalindrome [x] = True  -- same as matching (x:[])
 isPalindrome (xStart:xs)
     | xStart == xEnd = isPalindrome xMiddle
     | otherwise = False
