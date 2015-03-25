@@ -38,19 +38,25 @@ checkAllStartWithA x = and $ map wordStartsWithA x
 -- TODO: rewrite this
 stringifyDate y m d = (printf "%04d" y) ++ "-" ++ (printf "%02d" m) ++ "-" ++ (printf "%02d" d)
 
-data RandomYear = RandomYear Integer deriving (Show)
+-- don't need to do `data RandomYear = same thing`
+newtype RandomYear = RandomYear Integer deriving (Show)
 instance Arbitrary RandomYear where
     arbitrary = RandomYear `liftM` choose (1000, 3000)
 
-data RandomMonth = RandomMonth Int deriving (Show)
+newtype RandomMonth = RandomMonth Int deriving (Show)
 instance Arbitrary RandomMonth where
     arbitrary = RandomMonth `liftM` choose (1, 12)
 
-data RandomDay = RandomDay Int deriving (Show)
+newtype RandomDay = RandomDay Int deriving (Show)
 instance Arbitrary RandomDay where
     -- otherwise Feb 31 etc would fails
     -- should rewrite so that a single generator makes year month date
     arbitrary = RandomDay `liftM` choose (1, 28)
+
+newtype RandomWord = RandomWord String deriving (Show)
+instance Arbitrary RandomWord where
+    arbitrary = RandomWord `liftM` (listOf1 $ elements ['a'..'z'])
+
 
 spec :: Spec
 spec = do
@@ -87,8 +93,7 @@ spec = do
             halfLengthProperty :: [a] -> Bool
             halfLengthProperty xs = length(getFirstHalf xs) == length xs `div` 2
 
-        -- the QuickCheck `property` function cannot be applied on
-        -- functions with just abstract type declarations and without concrete types
+        -- the QuickCheck cannot generate arbitrary values for abstract types
         -- instead we declare(?) the concrete types below
         context "when applied to strings" $ do
             it "returns something with half the length" $ property $ do
@@ -123,9 +128,11 @@ spec = do
             nonPalindromes `shouldSatisfy` (not . any isPalindrome)
         it "does blah" $
             -- specify your own testcase generator (randomWord) for \word
-            -- note it does not actually exhaustively test all combinations (obviously)
+            -- note it does not actually exhaustively test all combinations (just tries maxSuccess times)
             -- forAll already wraps the `property` part (converts a function returning Bool into a quickcheck Property)
             forAll randomWord $ \word -> not $ isPalindrome word
+        it "does blah2" $ property $ do
+            \(RandomWord word) -> not $ isPalindrome word
 
 
     describe "formatDate" $ do
@@ -135,12 +142,13 @@ spec = do
             rightNow <- getCurrentTime
             regexPattern `shouldSatisfy` (=~) (formatDate rightNow)
         it "has the correct dates" $ property $ do
-                let propCorrectDate (RandomYear y) (RandomMonth m) (RandomDay d) =
+                let propCorrectDate :: Integer -> Int -> Int -> Bool
+                    propCorrectDate y m d =
                         stringDate == formatDate randomUTC
                             where stringDate = stringifyDate y m d
                                   -- UTCTime takes Day type and also needs a seconds from 00:00
                                   randomUTC = UTCTime (fromGregorian y m d) (fromIntegral 123)
-                propCorrectDate :: RandomYear -> RandomMonth -> RandomDay -> Bool
+                \(RandomYear y) (RandomMonth m) (RandomDay d) -> propCorrectDate y m d
 
 
     describe "anagrams of words that are real words?" $ do
