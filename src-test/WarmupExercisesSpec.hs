@@ -20,6 +20,8 @@ import Data.Time -- (getCurrentTime, fromGregorian)
 -- and trying to specify it fails
 -- import Data.Time.Clock as DTC (UTCTime)
 
+import Data.List (intercalate)
+
 import Text.Printf (printf)
 import qualified Data.Map as Map
 import Control.Monad (liftM)
@@ -37,8 +39,10 @@ import WarmupExercises
 checkAllStartWithA :: [String] -> Bool
 checkAllStartWithA x = and $ map wordStartsWithA x
 
--- TODO: rewrite this
-stringifyDate y m d = (printf "%04d" y) ++ "-" ++ (printf "%02d" m) ++ "-" ++ (printf "%02d" d)
+stringifyDate :: Integer -> Int -> Int -> String
+-- all the zipping/mapping etc require lists, which need homogenous elements
+-- so turn year into Num type first
+stringifyDate y m d = intercalate "-" $ zipWith printf ["%04d", "%02d" , "%02d"] [fromIntegral y, m, d]
 
 -- don't need to do `data RandomYear = same thing`
 newtype RandomYear = RandomYear Integer deriving (Show)
