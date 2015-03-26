@@ -24,7 +24,7 @@ import Data.List (intercalate)
 
 import Text.Printf (printf)
 import qualified Data.Map as Map
-import Control.Monad (liftM)
+import Control.Monad (liftM, liftM2)
 
 import WarmupExercises
     ( wordStartsWithA
@@ -42,7 +42,8 @@ checkAllStartWithA x = and $ map wordStartsWithA x
 stringifyDate :: Integer -> Int -> Int -> String
 -- all the zipping/mapping etc require lists, which need homogenous elements
 -- so turn year into Num type first
-stringifyDate y m d = intercalate "-" $ zipWith printf ["%04d", "%02d" , "%02d"] [fromIntegral y, m, d]
+stringifyDate y m d = intercalate "-" $
+    zipWith printf ["%04d", "%02d" , "%02d"] [fromIntegral y, m, d]
 
 -- don't need to do `data RandomYear = same thing`
 newtype RandomYear = RandomYear Integer deriving (Show)
@@ -131,26 +132,24 @@ spec = do
 
     describe "isPalindrome" $ do
 
-        it "correctly identifies palindromes for select test cases" $ do
+        context "when given certain example data" $ do
             let palindromes = ["abcba", "weffew"]
-            palindromes `shouldSatisfy` (all isPalindrome)
-
-        it "correctly identifies non-palindromes for select test cases" $ do
-            let nonPalindromes = ["aldskj", "qwe", "qe"]
-            nonPalindromes `shouldSatisfy` (not . any isPalindrome)
+                nonPalindromes = ["aldskj", "qwe", "qe"]
+            it "correctly identifies palindromes" $ do
+                palindromes `shouldSatisfy` (all isPalindrome)
+            it "correctly identifies nonpalindromes" $ do
+                nonPalindromes `shouldSatisfy` (not . any isPalindrome)
 
         it "does blah" $ do
-            -- create quickcheck testcase generator; excludes empty list
-            let randomWord = listOf $ elements ['a'..'z']
+            -- create quickcheck testcase generator;
+            -- excludes empty list, add ! at the end to make it not a palindrome
+            let randomWord = liftM2 (++) (listOf1 $ elements ['a'..'z']) (elements ["!"])
             -- specify your own testcase generator (randomWord) for \word
             -- note it does not actually exhaustively test all combinations (just tries maxSuccess times)
             -- forAll already wraps the `property` part (converts a function returning Bool into a quickcheck Property)
             forAll randomWord $ \word -> not $ isPalindrome word
 
-        modifyMaxSuccess (const 50000) $ prop "correctly identifies non-palindromes FOR ALLS" $ do
-            -- because we make RandomWord >3 letters long, we need to drastically
-            -- up the # of test cases before we see nontrivial palindromes
-            -- the trivial ones are "", "a", "aa" etc
+        prop "correctly identifies non-palindromes FOR ALLS" $ do
             \(RandomNonPalindromeWord word) -> not $ isPalindrome word
 
 
