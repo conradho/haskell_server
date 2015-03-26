@@ -26,6 +26,12 @@ everyPossiblePair :: [String] -> [String]
 everyPossiblePair [] = []
 everyPossiblePair (x:xs) = [x ++ other | other <- xs] ++ everyPossiblePair xs
 
+-- deleteFirst :: Eq a => [a] -> [a]
+deleteFirst _ [] = []
+deleteFirst a (x:xs)
+    | a == x    = xs
+    | otherwise = x : (deleteFirst a xs)
+
 
 -- first question
 selectElementsOfListStartingWithA :: [String] -> [String]
@@ -61,3 +67,6 @@ formatDate t = formatTime defaultTimeLocale "%0Y-%m-%d" t
 flipKeyVal :: (Ord k, Ord v) => Map.Map k v -> Map.Map v k
 flipKeyVal dictionary = Map.fromList $ map Data.Tuple.swap (Map.toList dictionary)
 
+getAnagrams :: Eq a => [a] -> [[a]]
+getAnagrams [] = [[]]
+getAnagrams word = [char:subWord | char <- word, subWord <- getAnagrams (deleteFirst char word)]

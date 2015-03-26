@@ -34,6 +34,7 @@ import WarmupExercises
     , isPalindrome
     , formatDate
     , flipKeyVal
+    , getAnagrams
     )
 
 checkAllStartWithA :: [String] -> Bool
@@ -70,6 +71,12 @@ instance Arbitrary RandomNonPalindromeWord where
             `suchThat` \all@(x:xs) ->
                 (length all > 3) && (x /= last xs)
         )  -- note the weird place of closing bracket
+
+newtype RandomSmallWord = RandomSmallWord String deriving (Show)
+instance Arbitrary RandomSmallWord where
+    arbitrary = RandomSmallWord `liftM` (
+        (listOf1 $ elements ['a'..'z']) `suchThat` \x -> (length x > 2 && length x < 8)
+        )
 
 
 spec :: Spec
@@ -170,8 +177,11 @@ spec = do
 
 
     describe "anagrams of words that are real words?" $ do
-        it "any anagram can be made from the original chars" $
-            pending
+        prop "any anagram can be made from the original chars" $ do
+            let anagramIsFromOriginal :: String -> String -> Bool
+                anagramIsFromOriginal word anagram = all (`elem` word) anagram
+            -- need to use words << 10 because anagram grows at O(n!)
+            \(RandomSmallWord word) -> all (anagramIsFromOriginal word) (getAnagrams word)
 
         -- change to MOAR quickcheck iterations
         modifyMaxSuccess (const 50) $ prop "hilo" $ do
