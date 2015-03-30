@@ -30,12 +30,12 @@ everyPossiblePair (x:xs) = [x ++ other | other <- xs] ++ everyPossiblePair xs
 deleteFirst _ [] = []
 deleteFirst a (x:xs)
     | a == x    = xs
-    | otherwise = x : (deleteFirst a xs)
+    | otherwise = x : deleteFirst a xs
 
 
 -- first question
 selectElementsOfListStartingWithA :: [String] -> [String]
-selectElementsOfListStartingWithA words = filter wordStartsWithA words
+selectElementsOfListStartingWithA = filter wordStartsWithA
 
 
 -- note if say there was a function declaration for [], it needs to go right after the type declaration
@@ -62,7 +62,7 @@ isPalindrome (xStart:xs)
 
 formatDate :: FormatTime a => a -> String
 -- %0Y zeropads to 4 digits (vs _Y blank space pads to 4 digits)
-formatDate t = formatTime defaultTimeLocale "%0Y-%m-%d" t
+formatDate = formatTime defaultTimeLocale "%0Y-%m-%d"
 
 flipKeyVal :: (Ord k, Ord v) => Map.Map k v -> Map.Map v k
 flipKeyVal dictionary = Map.fromList $ map Data.Tuple.swap (Map.toList dictionary)

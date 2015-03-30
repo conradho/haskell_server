@@ -38,7 +38,7 @@ import WarmupExercises
     )
 
 checkAllStartWithA :: [String] -> Bool
-checkAllStartWithA x = and $ map wordStartsWithA x
+checkAllStartWithA = all wordStartsWithA
 
 stringifyDate :: Integer -> Int -> Int -> String
 -- all the zipping/mapping etc require lists, which need homogenous elements
@@ -64,7 +64,7 @@ instance Arbitrary RandomDay where
 newtype RandomNonPalindromeWord = RandomNonPalindromeWord String deriving (Show)
 instance Arbitrary RandomNonPalindromeWord where
     arbitrary = RandomNonPalindromeWord `liftM` (
-        (listOf1 $ elements ['a'..'z'])
+        listOf1 (elements ['a'..'z'])
             -- need listOf1 above because otherwise cannot split into (x:xs) below
             -- otherwise it will say `non-exhaustive pattern` and the code compiles
             -- but the specific test will fail
@@ -75,15 +75,15 @@ instance Arbitrary RandomNonPalindromeWord where
 newtype RandomSmallWord = RandomSmallWord String deriving (Show)
 instance Arbitrary RandomSmallWord where
     arbitrary = RandomSmallWord `liftM` (
-        (listOf1 $ elements ['a'..'z']) `suchThat` \x -> (length x > 2 && length x < 8)
+        listOf1 (elements ['a'..'z']) `suchThat` \x -> length x > 2 && length x < 8
         )
 
 
 spec :: Spec
 spec = do
 
-    describe "selectElementsOfListStartingWithA" $ do
-        it "should only have 'a's in the list" $ property $ do
+    describe "selectElementsOfListStartingWithA" $
+        it "should only have 'a's in the list" $ property $
             -- QuickCheck properties print counter examples if it fails vs hspec doesn't
             checkAllStartWithA . selectElementsOfListStartingWithA
 
@@ -92,15 +92,15 @@ spec = do
         let alphabetStrings = map (:[]) ['a' .. 'd']  -- ["a", "b", "c", "d"]
         let expectedResult = ["ab", "ac", "ad", "bc", "bd", "cd"]
 
-        it "should return every possible pairing of students" $ do
-            (everyPossiblePairSorted alphabetStrings) `shouldBe` expectedResult
+        it "should return every possible pairing of students" $
+            everyPossiblePairSorted alphabetStrings `shouldBe` expectedResult
 
         context "when provided with non-sorted input" $ do
             it "should still return alphabetically sorted" $ do
                 -- the do above is needed (vs good style previously) because we have two statements
                 let reversedStrings = reverse alphabetStrings
-                (everyPossiblePairSorted reversedStrings) `shouldBe` expectedResult
-            it "should not sort within each element" $ do
+                everyPossiblePairSorted reversedStrings `shouldBe` expectedResult
+            it "should not sort within each element" $
                 everyPossiblePairSorted ["abc", "fed", "hgi"] `shouldBe` ["abcfed", "abchgi", "fedhgi"]
 
 
@@ -109,7 +109,7 @@ spec = do
         -- below we group all the lets into one block, vs separate let statements above
         -- also note the where indentation (which is based off of the matchHead insead of the let)
         let matchHeadOfOriginalProperty :: Eq a => [a] -> Bool
-            matchHeadOfOriginalProperty xs = all (==True) (doesEachPositionMatch)
+            matchHeadOfOriginalProperty xs = all (==True) doesEachPositionMatch
                 where doesEachPositionMatch = zipWith (==) (getFirstHalf xs) xs
             halfLengthProperty :: [a] -> Bool
             halfLengthProperty xs = length(getFirstHalf xs) == length xs `div` 2
@@ -143,7 +143,7 @@ spec = do
             let palindromes = ["abcba", "weffew"]
                 nonPalindromes = ["aldskj", "qwe", "qe"]
             it "correctly identifies palindromes" $ do
-                palindromes `shouldSatisfy` (all isPalindrome)
+                palindromes `shouldSatisfy` all isPalindrome
             it "correctly identifies nonpalindromes" $ do
                 nonPalindromes `shouldSatisfy` (not . any isPalindrome)
 
@@ -185,7 +185,7 @@ spec = do
 
         -- change to MOAR quickcheck iterations
         modifyMaxSuccess (const 50) $ prop "hilo" $ do
-            ((\xs -> xs == xs) :: [Int] -> Bool)
+            (\xs -> xs == xs) :: [Int] -> Bool
 
 
     describe "flipKeyVal" $ do
@@ -197,13 +197,13 @@ spec = do
             doubleFlipProperty
         prop "flipping a mapping with keys == vals does not change it" $ do
             let keyValueSame :: [Int] -> Bool
-                keyValueSame ks = (flipKeyVal mapping) == mapping
+                keyValueSame ks = mapping == flipKeyVal mapping
                     where mapping = Map.fromList $ zip ks ks
             keyValueSame
         prop "check flipped mapping == creating a new mapping using swapped key/value" $ do
             -- this fails because if there is duplicated value, the the keys they become are not unique
             let swappedKeyValueProperty :: [Int] -> [Int] -> Bool
-                swappedKeyValueProperty ks vs = (flipKeyVal mapping) == reversedMapping
+                swappedKeyValueProperty ks vs = reversedMapping == flipKeyVal mapping
                     where mapping = Map.fromList $ zip ks vs
                           reversedMapping = Map.fromList $ zip vs ks
             swappedKeyValueProperty
