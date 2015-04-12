@@ -20,7 +20,7 @@ import Data.Time -- (getCurrentTime, fromGregorian)
 -- and trying to specify it fails
 -- import Data.Time.Clock as DTC (UTCTime)
 
-import Data.List (intercalate)
+import Data.List (intercalate, nub)
 
 import Text.Printf (printf)
 import qualified Data.Map as Map
@@ -117,18 +117,18 @@ spec = do
         -- the QuickCheck cannot generate arbitrary values for abstract types
         -- instead we declare(?) the concrete types below
         context "when applied to strings" $ do
-            it "returns something with half the length" $ property $ do
-                halfLengthProperty :: String -> Bool
-            it "contains all characters from first half" $ property $ do
-                matchHeadOfOriginalProperty :: String -> Bool
+            it "returns something with half the length" $ property
+                (halfLengthProperty :: String -> Bool)
+            it "contains all characters from first half" $ property
+                (matchHeadOfOriginalProperty :: String -> Bool)
 
         context "when applied to a list of Integers" $ do
             -- note: prop is just a shortcut for it + property.
             -- here you always need to put `do` at the end
             prop "returns something with half the length" $ do
                 halfLengthProperty :: [Integer] -> Bool
-            prop "contains all characters from first half" $ do
-                matchHeadOfOriginalProperty :: [Integer] -> Bool
+            prop "contains all characters from first half"
+                (matchHeadOfOriginalProperty :: [Integer] -> Bool)
 
         context "when applied to a list of Bools" $ do
             prop "returns something with half the length" $ do
@@ -190,10 +190,10 @@ spec = do
 
     describe "flipKeyVal" $ do
         prop "check flipping twice gives original" $ do
-            -- this fails because if there is duplicated value, the the keys they become are not unique
             let doubleFlipProperty :: [Int] -> [Int] -> Bool
                 doubleFlipProperty ks vs = flipKeyVal (flipKeyVal mapping) == mapping
-                    where mapping = Map.fromList $ zip ks vs
+                    -- need to make sure ks and vs have unique elements (otherwise overwrites)
+                    where mapping = Map.fromList $ zip (nub ks) (nub vs)
             doubleFlipProperty
         prop "flipping a mapping with keys == vals does not change it" $ do
             let keyValueSame :: [Int] -> Bool
@@ -201,9 +201,11 @@ spec = do
                     where mapping = Map.fromList $ zip ks ks
             keyValueSame
         prop "check flipped mapping == creating a new mapping using swapped key/value" $ do
-            -- this fails because if there is duplicated value, the the keys they become are not unique
             let swappedKeyValueProperty :: [Int] -> [Int] -> Bool
                 swappedKeyValueProperty ks vs = reversedMapping == flipKeyVal mapping
-                    where mapping = Map.fromList $ zip ks vs
-                          reversedMapping = Map.fromList $ zip vs ks
+                    -- need to make sure ks and vs have unique elements (otherwise overwrites)
+                    where uniqKs = nub ks
+                          uniqVs = nub vs
+                          mapping = Map.fromList $ zip uniqKs uniqVs
+                          reversedMapping = Map.fromList $ zip uniqVs uniqKs
             swappedKeyValueProperty

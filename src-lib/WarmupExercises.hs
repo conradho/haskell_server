@@ -64,9 +64,12 @@ formatDate :: FormatTime a => a -> String
 -- %0Y zeropads to 4 digits (vs _Y blank space pads to 4 digits)
 formatDate = formatTime defaultTimeLocale "%0Y-%m-%d"
 
-flipKeyVal :: (Ord k, Ord v) => Map.Map k v -> Map.Map v k
-flipKeyVal dictionary = Map.fromList $ map Data.Tuple.swap (Map.toList dictionary)
 
 getAnagrams :: Eq a => [a] -> [[a]]
 getAnagrams [] = [[]]
 getAnagrams word = [char:subWord | char <- word, subWord <- getAnagrams (deleteFirst char word)]
+
+
+flipKeyVal :: (Ord k, Ord v) => Map.Map k v -> Map.Map v k
+flipKeyVal dictionary = Map.fromList $ map Data.Tuple.swap (Map.toList dictionary)
+
