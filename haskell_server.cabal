@@ -15,9 +15,11 @@ Library
   Default-Language:     Haskell2010
   Build-depends: base
                , time == 1.5.0.1
+               , parallel
+  exposed-modules: ParallelExercise
 
 -- test-suite is new in cabal 1.10
-Test-Suite tests
+Test-Suite my-tests
   type: exitcode-stdio-1.0
   Default-Language:     Haskell2010
   hs-source-dirs: src-test, src-lib
@@ -31,6 +33,17 @@ Test-Suite tests
                , containers == 0.5.5.1
                , hspec
                , hspec-discover
+
+-- cabal configure --enable-benchmarks
+benchmark my-bench
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   src-lib, src-bench
+  main-is:          MainBenchmarkSuite.hs
+  build-depends:    base,
+                    criterion,
+                    random
+  ghc-options:      -Wall
+                    -O2
 
 
 Executable snapserver
